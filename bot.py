@@ -31,8 +31,15 @@ def fetch_data():
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'
     }
+    # Proxy ayarları
+    proxies = {
+        'http': 'http://142.93.202.130:80',  # Proxy adresi ve portu
+        'https': 'http://142.93.202.130:80'  # HTTPS için de aynı proxy kullanılabilir
+    }
+
     try:
-        response = requests.get("https://asyaanimeleri.com/", headers=headers)
+        # Proxy kullanarak istek gönderme
+        response = requests.get("https://asyaanimeleri.com/", headers=headers, proxies=proxies)
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'html.parser')
         
