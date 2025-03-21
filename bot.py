@@ -1,9 +1,8 @@
-import time
+
 import requests
 from bs4 import BeautifulSoup
 import discord
 from discord.ext import tasks
-import aiohttp  # Asenkron HTTP istekleri için
 import os
 
 # Config dosyasından bilgileri yükleme
@@ -113,7 +112,7 @@ async def send_notification(channel_id, role_id, title, link, image_url, episode
         # Resmi cihazdan siliyoruz
         os.remove(image_path)
 
-@tasks.loop(minutes=5)
+@tasks.loop(minutes=30)
 async def check_for_changes():
     new_data = fetch_data()
     if new_data and new_data != check_for_changes.previous_data:
