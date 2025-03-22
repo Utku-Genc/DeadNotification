@@ -47,6 +47,10 @@ def fetch_anime_data():
         episode_tag = anime_div.find("span", class_="show-episode")
         episode = episode_tag.text.strip() if episode_tag else "Bölüm Bulunamadı"
 
+        # Anime bağlantısını alma
+        link_tag = anime_div.find("a", class_="show-link")
+        link = link_tag['href'] if link_tag else None  # linki None olarak ayarlıyoruz
+
         if air_time != "Saat Bulunamadı":
             print(f"Raw Air Time: {air_time}")  # Saat bilgisini yazdırıyoruz
         
@@ -71,13 +75,22 @@ def fetch_anime_data():
         else:
             air_time_24h = air_time
 
-
-
-        anime_data.append({
-            "title": title_text,
-            "episode": episode,
-            "air_time": air_time_24h
-        })
+        # Eğer link varsa anime verisine dahil et
+        if link:
+            # Burada linkin başına temel URL ekliyoruz
+            full_link = f"https://animeschedule.net/{link}"
+            anime_data.append({
+                "title": title_text,
+                "episode": episode,
+                "air_time": air_time_24h,
+                "link": full_link  # Tam bağlantıyı buraya ekliyoruz
+            })
+        else:
+            anime_data.append({
+                "title": title_text,
+                "episode": episode,
+                "air_time": air_time_24h
+            })
     
     return anime_data
 
@@ -96,9 +109,13 @@ async def send_anime_schedule():
     message = f"**Bugünün <@&{ROLE_ID}> Yayınları ({today_date})**\n\n"
     
     for anime in anime_data_sorted:
-        message += f"**Başlık**: {anime['title']}\n"
-        message += f"**Bölüm**: {anime['episode']}\n"
-        message += f"**Yayın Saati**: {anime['air_time']}\n"
+        # Eğer 'link' varsa, başlığa link ekliyoruz
+        if 'link' in anime:
+            message += f"**🎬 Anime: [{anime['title']}]({anime['link']})**\n"
+        else:
+            message += f"**🎬 Anime: {anime['title']}**\n"
+        message += f"**📺 Bölüm**: {anime['episode']}\n"
+        message += f"**🕒 Yayın Saati**: {anime['air_time']}\n"
         message += "\n"
     
     await channel.send(message)
