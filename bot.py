@@ -33,8 +33,8 @@ def fetch_data():
     }
     # Proxy ayarları
     proxies = {
-        'http': 'http://142.93.202.130:80',  # Proxy adresi ve portu
-        'https': 'http://142.93.202.130:80'  # HTTPS için de aynı proxy kullanılabilir
+        'http': 'socks5h://127.0.0.1:9150',
+        'https': 'socks5h://127.0.0.1:9150'
     }
 
     try:
