@@ -60,6 +60,13 @@ def save_channel_and_role(channel_id, role_id):
         file.write(f"{channel_id},{role_id}\n")
     return True  # Yeni kayıt eklendi
 
+# Admin kontrolü (Yalnızca yöneticiler bu komutları kullanabilir)
+async def check_admin(interaction: discord.Interaction) -> bool:
+    # Sunucuda kullanıcının yönetici olup olmadığını kontrol et
+    if interaction.user.guild_permissions.administrator:
+        return True
+    return False
+
 # Anime verilerini çekme
 def fetch_anime_data():
     url = "https://animeschedule.net/"
@@ -167,22 +174,26 @@ def remove_saved_channel(channel_id, role_id):
 # Kullanıcıdan kanal ve rol bilgisi alıp kaydeden komut
 @tree.command(name="bildirim", description="Anime bildirimleri için bir kanal ve rol belirleyin.")
 async def set_channel(interaction: discord.Interaction, channel: discord.TextChannel, role: discord.Role):
-    success = save_channel_and_role(channel.id, role.id)
-    
-    if success:
-        await interaction.response.send_message(f"✅ Bildirimler artık {channel.mention} kanalına ve {role.mention} rolüne gönderilecek!", ephemeral=True)
+    if await check_admin(interaction):  # Admin kontrolü
+        success = save_channel_and_role(channel.id, role.id)
+        if success:
+            await interaction.response.send_message(f"✅ Bildirimler artık {channel.mention} kanalına ve {role.mention} rolüne gönderilecek!", ephemeral=True)
+        else:
+            await interaction.response.send_message(f"⚠️ {channel.mention} zaten bir rol ile bildirim almakta. Aynı kanala birden fazla rol eklenemez!", ephemeral=True)
     else:
-        await interaction.response.send_message(f"⚠️ {channel.mention} zaten bir rol ile bildirim almakta. Aynı kanala birden fazla rol eklenemez!", ephemeral=True)
+        await interaction.response.send_message(f"⚠️ Bu komutu kullanmak için yönetici olmanız gerekiyor.", ephemeral=True)
 
 # **Yeni Komut: Kanal ve rol silme**
 @tree.command(name="bildirim_sil", description="Bildirim listesinden belirli bir kanal ve rolü kaldır.")
 async def remove_channel(interaction: discord.Interaction, channel: discord.TextChannel, role: discord.Role):
-    success = remove_saved_channel(channel.id, role.id)
-    
-    if success:
-        await interaction.response.send_message(f"🗑️ {channel.mention} ve {role.mention} artık bildirim almayacak.", ephemeral=True)
+    if await check_admin(interaction):  # Admin kontrolü
+        success = remove_saved_channel(channel.id, role.id)
+        if success:
+            await interaction.response.send_message(f"🗑️ {channel.mention} ve {role.mention} artık bildirim almayacak.", ephemeral=True)
+        else:
+            await interaction.response.send_message(f"⚠️ {channel.mention} ve {role.mention} kayıtlı değil.", ephemeral=True)
     else:
-        await interaction.response.send_message(f"⚠️ {channel.mention} ve {role.mention} kayıtlı değil.", ephemeral=True)
+        await interaction.response.send_message(f"⚠️ Bu komutu kullanmak için yönetici olmanız gerekiyor.", ephemeral=True)
 
 # Bot hazır olduğunda çalışacak kısım
 @bot.event
