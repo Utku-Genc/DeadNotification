@@ -93,7 +93,7 @@ async def send_anime_schedule():
     # Bugünün tarihini ekleme
     today_date = datetime.now(tz=turkey_timezone).strftime("%d %B %Y")
 
-    message = f"**Bugünün Anime Yayınları ({today_date})**\n\n"
+    message = f"**Bugünün <@&{ROLE_ID}> Yayınları ({today_date})**\n\n"
     
     for anime in anime_data_sorted:
         message += f"**Başlık**: {anime['title']}\n"
@@ -102,6 +102,7 @@ async def send_anime_schedule():
         message += "\n"
     
     await channel.send(message)
+
 
 # Bot hazır olduğunda çalışacak kısım
 @client.event
