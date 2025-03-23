@@ -121,12 +121,17 @@ def fetch_anime_data():
 def split_message(message: str):
     max_length = 2000
     messages = []
+    
+    # While the message exceeds the max length, slice it
     while len(message) > max_length:
         split_point = message.rfind('\n', 0, max_length)
+        if split_point == -1:  # Eğer yeni bir satır bulunamazsa, max_length ile kes
+            split_point = max_length
         messages.append(message[:split_point])
-        message = message[split_point:]
-    messages.append(message)  # Son parçayı ekleyin
+        message = message[split_point:].lstrip()  # Kullanılan kısmı mesajdan çıkar
+    messages.append(message)  # Son kalan kısmı ekleyin
     return messages
+
 
 # Belirtilen kanallara anime listesini gönderme
 async def send_anime_schedule():
@@ -160,6 +165,8 @@ async def send_anime_schedule():
                 await channel.send(f"<@&{role_id}> {msg}")
         else:
             print(f"⚠️ Kanal bulunamadı: {channel_id}")
+
+
 # Sunucudan kayıtlı kanal ve rolü silme
 def remove_saved_channel(channel_id, role_id):
     if not os.path.exists(DATA_FILE):
