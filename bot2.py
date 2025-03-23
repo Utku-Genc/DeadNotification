@@ -95,6 +95,7 @@ def fetch_anime_data():
     return anime_data
 
 # Tabloyu Discord kanalına gönderme
+# Tabloyu Discord kanalına gönderme
 async def send_anime_schedule():
     anime_data = fetch_anime_data()
     
@@ -118,7 +119,14 @@ async def send_anime_schedule():
         message += f"**🕒 Yayın Saati**: {anime['air_time']}\n"
         message += "\n"
     
-    await channel.send(message)
+    # Eğer mesaj uzunluğu 2000 karakteri aşarsa, mesajı böl
+    while len(message) > 2000:
+        await channel.send(message[:2000])  # İlk 2000 karakteri gönder
+        message = message[2000:]  # Kalan kısmı al
+    
+    # Kalan mesajı gönder
+    if message:
+        await channel.send(message)
 
 
 # Bot hazır olduğunda çalışacak kısım
