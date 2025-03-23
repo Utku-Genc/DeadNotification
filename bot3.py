@@ -117,9 +117,9 @@ def fetch_anime_data():
 
     return anime_data
 
-# Mesaj uzunluğu kontrolü: Eğer 2000 karakterden fazla olursa, mesajı parçalara ayırıyoruz
+# Mesaj uzunluğu kontrolü: Eğer 1900 karakterden fazla olursa, mesajı parçalara ayırıyoruz
 def split_message(message: str):
-    max_length = 2000
+    max_length = 1900
     messages = []
     
     # While the message exceeds the max length, slice it
